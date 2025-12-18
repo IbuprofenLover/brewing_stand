@@ -1,11 +1,10 @@
-## IntelliJ IDEA
 # General
 .idea/libraries/
 .idea/shelf/
 .idea/compiler.xml
 .idea/jarRepositories.xml
 .idea/modules.xml
-workspace.xml
+.idea/workspace.xml
 *.iws
 *.iml
 *.ipr
