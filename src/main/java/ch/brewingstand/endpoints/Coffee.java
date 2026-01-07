@@ -28,7 +28,7 @@ public class Coffee {
         ctx.result("coffee with id " + idToRetrieve);
     }
 
-    public static void getAllCoffees(Context ctx) {
+    public static void getManyCoffees(Context ctx) {
 
         ctx.result("All coffees");
     }

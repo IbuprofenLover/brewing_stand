@@ -1,5 +1,6 @@
 package ch.brewingstand;
 
+import ch.brewingstand.endpoints.Coffee;
 import io.javalin.Javalin;
 
 public abstract class RequestManager {
@@ -13,8 +14,8 @@ public abstract class RequestManager {
 
     // todo redefine the gets so that they actually call functions from coffee and review
     private static void coffee_delegate(Javalin app) {
-        app.get("/coffee", ctx -> ctx.result("List of coffees"));
-        app.get("/coffee/{id}", ctx -> ctx.result("getting coffee with id " +  ctx.pathParam("id")));
+        app.get("/coffee", Coffee::getManyCoffees);
+        app.get("/coffee/{id}", Coffee::getCoffeeById);
     }
 
     private static void review_delegate(Javalin app) {
