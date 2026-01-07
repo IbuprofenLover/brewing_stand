@@ -7,8 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
         Javalin app = Javalin.create();
-
-        app.get("/", ctx -> ctx.result("Hello, world!"));
+        RequestManager.delegate(app);
 
         app.start(PORT);
     }
