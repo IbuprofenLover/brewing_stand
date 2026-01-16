@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Coffee {
-    private static int currid = 0;
-    private final int id;
     private final String name;
     private int intensity;
     private String aroma;
     private String origin;
     private String type;
-    private static final ConcurrentHashMap<Integer, Coffee> coffees = new ConcurrentHashMap<Integer, Coffee>();
+    private static final ConcurrentHashMap<String, Coffee> coffees = new ConcurrentHashMap<String, Coffee>();
 
     public Coffee(String name, String origin, int intensity, String aroma, String type) {
         this.name = name;
@@ -21,20 +19,19 @@ public class Coffee {
         this.origin = origin;
         this.aroma = aroma;
         this.type = type;
-        id = currid++;
-        coffees.put(id, this);
+        coffees.put(name, this);
     }
     /**
-     * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffeex
+     * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffee
      *
      * @param ctx the context of the request
      */
     public static void getCoffeeById(Context ctx) {
-        int idToRetrieve = ctx.pathParamAsClass("id", Integer.class).get();
+        String idToRetrieve = ctx.pathParam("id");
         Coffee coffee = coffees.get(idToRetrieve);
         if (coffee == null) {
             ctx.status(404);
-            ctx.result("coffee with id "+idToRetrieve +" do not exists.");
+            ctx.result("coffee with name "+idToRetrieve +" do not exists.");
             return;
         }
         ctx.json(coffee);
@@ -47,7 +44,6 @@ public class Coffee {
      * @param ctx the context of the request
      */
     public static void getManyCoffees(Context ctx) {
-        String nm = ctx.queryParam("name");
         String orgn = ctx.queryParam("origin");
         String intense = ctx.queryParam("intensity");
         String get_aroma = ctx.queryParam("aroma");
@@ -59,7 +55,6 @@ public class Coffee {
         }
 
         for(Coffee coffee : coffees.values()) {
-            if(nm != null && !coffee.getName().equals(nm)) continue;
             if(orgn != null && !coffee.origin.equals(orgn)) continue;
             if(get_aroma != null && !coffee.aroma.equals(get_aroma)) continue;
             if(intense != null && Integer.parseInt(intense) != coffee.intensity) continue;
@@ -95,9 +90,6 @@ public class Coffee {
             return;
         }
 
-        post_aroma = post_aroma==null?"no specific aroma":post_aroma;
-        post_type = post_type==null?"no specific type":post_type;
-
         for(Coffee coffee : coffees.values()) {
             if(coffee.getName().equals(nm)){
                 ctx.status(409);
@@ -105,8 +97,11 @@ public class Coffee {
                 return;
             }
         }
+        post_aroma = post_aroma==null?"no specific aroma":post_aroma;
+        post_type = post_type==null?"no specific type":post_type;
+
         Coffee c = new Coffee(nm, orgn, Integer.parseInt(intense),  post_aroma, post_type);
-        coffees.put(c.id, c);
+        coffees.put(c.name, c);
         ctx.status(201);
         ctx.json(c);
     }
@@ -118,13 +113,13 @@ public class Coffee {
      * @param ctx the context of the request
      */
     public static void deleteCoffee(Context ctx) {
-        Coffee coffee = coffees.get(Integer.parseInt(ctx.pathParam("id")));
+        Coffee coffee = coffees.get(ctx.pathParam("id"));
         if(coffee == null) {
             ctx.status(404);
             ctx.result("Not found");
             return;
         }
-        coffees.remove(coffee.id);
+        coffees.remove(coffee.name);
         ctx.status(204);
     }
 
@@ -174,7 +169,6 @@ public class Coffee {
      * For JSON parsing
      */
     public String getName() {return name;}
-    public int getId() {return id;}
     public String getOrigin() {return origin;}
     public int getIntensity() {return intensity;}
     public String getAroma() {return aroma;}
