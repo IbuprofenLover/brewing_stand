@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Coffee {
     private static int currid = 0;
     private final int id;
-    private String name;
+    private final String name;
     private int intensity;
     private String aroma;
     private String origin;
@@ -150,7 +150,7 @@ public class Coffee {
         String post_aroma = ctx.queryParam("aroma");
         String post_type = ctx.queryParam("type");
 
-        if(nm == null && orgn == null && intense == null && post_aroma == null && post_type == null) {
+        if(orgn == null && intense == null && post_aroma == null && post_type == null) {
             ctx.status(400);
             ctx.result("You should provide at least one attribute to change in [name, origin, intensity, aroma, type]");
             return;
@@ -164,7 +164,6 @@ public class Coffee {
         coffee.aroma = (post_aroma == null)?coffee.aroma : post_aroma;
         coffee.type = (post_type == null)?coffee.type : post_type;
         coffee.intensity = (intense == null)?coffee.intensity : Integer.parseInt(intense);
-        coffee.name = (nm==null)?coffee.name : nm;
 
 
         ctx.json(coffee);
