@@ -85,7 +85,6 @@ public class Coffee {
         String post_type = ctx.queryParam("type");
 
         if(nm == null || orgn == null || intense == null) {
-
             ctx.status(400);
             ctx.result("Invalid request body : a coffee must at least contain a name, an origin and an intensity");
             return;
@@ -96,8 +95,8 @@ public class Coffee {
             return;
         }
 
-        post_aroma = post_aroma==null?"":post_aroma;
-        post_type = post_type==null?"":post_type;
+        post_aroma = post_aroma==null?"no specific aroma":post_aroma;
+        post_type = post_type==null?"no specific type":post_type;
 
         for(Coffee coffee : coffees.values()) {
             if(coffee.getName().equals(nm)){
@@ -129,6 +128,14 @@ public class Coffee {
         ctx.status(204);
     }
 
+    /**
+     * The function that handle the PUT function : the context should include a path parameter named id, which correspond
+     * to the coffee we want to modify. The context should also contain the query parameters for each attribute of the
+     * coffee object.
+     *
+     * The request shall include at least one of these query parameters, but it can contain all of them
+     * @param ctx the context of the request
+     */
     public static void putCoffee(Context ctx) {
         int idToUpdate = ctx.pathParamAsClass("id", Integer.class).get();
         Coffee coffee = coffees.get(idToUpdate);
