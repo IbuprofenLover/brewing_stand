@@ -21,10 +21,10 @@ public abstract class RequestManager {
         String[] origins = {"Italy", "Colombia", "France", "Ethiopia", "Indonesia",
                         "Kenya", "USA", "Guatemala", "Brazil", "Italy"};
 
-        int[] intensities = {9, 6, 8, 5, 7, 6, 5, 6, 4, 9};
-        int[] bitterness = {8, 5, 7, 3, 6, 4, 5, 4, 3, 9};
+        String[] aroma = {"coco and dark chocolate", "hints of wood", "fruity", "bitter"};
+        String[] types = {"blend", "preparation", "aromatic coffee"};
 
-        for (int i = 0; i < names.length; i++) {Coffee f = new Coffee(names[i], origins[i], intensities[i], bitterness[i]);}
+        for (int i = 0; i < names.length; i++) {Coffee f = new Coffee(names[i], origins[i], i%10, aroma[i%4], types[i%3]);}
     }
 
     private static void coffee_delegate(Javalin app) {
@@ -35,7 +35,7 @@ public abstract class RequestManager {
 
         app.post("/coffee", Coffee::postCoffee);
 
-        app.put("/coffee", Coffee::putCoffee);
+        app.put("/coffee/{id}", Coffee::putCoffee);
     }
 
 
