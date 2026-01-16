@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Coffee {
+    // order matters for JSON parsing
     private final String name;
-    private int intensity;
-    private String aroma;
     private String origin;
     private String type;
+    private String aroma;
+    private int intensity;
+
     private static final ConcurrentHashMap<String, Coffee> coffees = new ConcurrentHashMap<String, Coffee>();
 
     public Coffee(String name, String origin, int intensity, String aroma, String type) {
@@ -22,7 +24,7 @@ public class Coffee {
         coffees.put(name, this);
     }
     /**
-     * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffee
+     * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffee.
      *
      * @param ctx the context of the request
      */
@@ -132,11 +134,11 @@ public class Coffee {
      * @param ctx the context of the request
      */
     public static void putCoffee(Context ctx) {
-        int idToUpdate = ctx.pathParamAsClass("id", Integer.class).get();
-        Coffee coffee = coffees.get(idToUpdate);
+        String coffeeToUpdate = ctx.pathParam("id");
+        Coffee coffee = coffees.get(coffeeToUpdate);
         if(coffee == null) {
             ctx.status(404);
-            ctx.result("coffee with id "+idToUpdate +" do not exists.");
+            ctx.result("Error : coffee with name "+ coffeeToUpdate +" do not exists.");
             return;
         }
         String nm = ctx.queryParam("name");
@@ -147,7 +149,7 @@ public class Coffee {
 
         if(orgn == null && intense == null && post_aroma == null && post_type == null) {
             ctx.status(400);
-            ctx.result("You should provide at least one attribute to change in [name, origin, intensity, aroma, type]");
+            ctx.result("Error : At least one attribute to modify required from [origin, intensity, aroma, type]");
             return;
         }
         if(intense != null && isInvalidNumeric(intense, 1, 10)) {
@@ -170,9 +172,10 @@ public class Coffee {
      */
     public String getName() {return name;}
     public String getOrigin() {return origin;}
-    public int getIntensity() {return intensity;}
-    public String getAroma() {return aroma;}
     public String getType() {return type;}
+    public String getAroma() {return aroma;}
+    public int getIntensity() {return intensity;}
+
 
     /**
      * Takes a string and check if it represents an integer value, and if this value is between the min
