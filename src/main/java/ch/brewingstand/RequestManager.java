@@ -1,6 +1,6 @@
 package ch.brewingstand;
 
-import ch.brewingstand.endpoints.Coffee;
+import ch.brewingstand.endpoints.CoffeeClasses.CoffeeController;
 import io.javalin.Javalin;
 
 public abstract class RequestManager {
@@ -11,14 +11,14 @@ public abstract class RequestManager {
     }
 
     private static void coffee_delegate(Javalin app) {
-        app.get("/coffee", Coffee::getManyCoffees);
-        app.get("/coffee/{id}", Coffee::getCoffeeById);
+        app.get("/coffee", CoffeeController::getManyCoffees);
+        app.get("/coffee/{id}", CoffeeController::getCoffeeById);
 
-        app.delete("/coffee/{id}", Coffee::deleteCoffee);
+        app.delete("/coffee/{id}", CoffeeController::deleteCoffee);
 
-        app.post("/coffee", Coffee::postCoffee);
+        app.post("/coffee", CoffeeController::postCoffee);
 
-        app.put("/coffee/{id}", Coffee::putCoffee);
+        app.put("/coffee/{id}", CoffeeController::putCoffee);
     }
 
 

@@ -1,6 +1,4 @@
-package ch.brewingstand.endpoints;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+package ch.brewingstand.endpoints.CoffeeClasses;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
 
@@ -8,28 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Coffee {
-    // order matters for JSON parsing
-    private final String name;
-    private String origin;
-    private String type;
-    private String aroma;
-    private int intensity;
-
+public class CoffeeController {
     private static final ConcurrentHashMap<String, Coffee> coffees = new ConcurrentHashMap<String, Coffee>();
-
-    @JsonCreator
-    public Coffee(@JsonProperty("name") String name,
-                  @JsonProperty("origin") String origin,
-                  @JsonProperty("intensity") int intensity,
-                  @JsonProperty("aroma") String aroma,
-                  @JsonProperty("type") String type) {
-        this.name = name;
-        this.intensity = Math.clamp(intensity, 1, 10);
-        this.origin = origin;
-        this.aroma = aroma;
-        this.type = type;
-    }
+    public CoffeeController() {}
     /**
      * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffee.
      *
@@ -64,10 +43,10 @@ public class Coffee {
         }
 
         for(Coffee coffee : coffees.values()) {
-            if(orgn != null && !coffee.origin.equals(orgn)) continue;
-            if(get_aroma != null && !coffee.aroma.equals(get_aroma)) continue;
-            if(intense != null && Integer.parseInt(intense) != coffee.intensity) continue;
-            if(get_type != null && !coffee.type.equals(get_type)) continue;
+            if(orgn != null && !coffee.origin().equals(orgn)) continue;
+            if(get_aroma != null && !coffee.aroma().equals(get_aroma)) continue;
+            if(intense != null && Integer.parseInt(intense) != coffee.intensity()) continue;
+            if(get_type != null && !coffee.type().equals(get_type)) continue;
 
             returnArray.add(coffee);
         }
@@ -82,53 +61,23 @@ public class Coffee {
      * @param ctx the context of the request
      */
     public static void postCoffee(Context ctx) {
-        /*String nm = ctx.queryParam("name");
-        String orgn = ctx.queryParam("origin");
-        String intense = ctx.queryParam("intensity");
-        String post_aroma = ctx.queryParam("aroma");
-        String post_type = ctx.queryParam("type");
 
-        if(nm == null || orgn == null || intense == null) {
-            ctx.status(400);
-            ctx.result("Invalid request body : a coffee must at least contain a name, an origin and an intensity");
-            return;
-        }
-        if(isInvalidNumeric(intense, 1, 10)){
-            ctx.status(400);
-            ctx.result("Error : Intensity should be between 1 and 10");
-            return;
-        }
-
-
-        for(Coffee coffee : coffees.values()) {
-            if(coffee.getName().equals(nm)){
-                ctx.status(409);
-                ctx.result("Coffee with name "+nm+" already exists.");
-                return;
-            }
-        }
-        post_aroma = post_aroma==null?"no specific aroma":post_aroma;
-        post_type = post_type==null?"no specific type":post_type;
-        Coffee c = new Coffee(nm, orgn, Integer.parseInt(intense),  post_aroma, post_type);
-
-        */
         Coffee c = ctx.bodyValidator(Coffee.class)
-                .check(obj -> obj.name != null, "Missing name")
-                .check(obj -> obj.origin != null, "Missing origin")
-                .check(obj -> obj.aroma != null, "Missing aroma")
-                .check(obj -> obj.type != null, "Missing type")
-                .check(obj -> obj.intensity != 0, "Missing intensity")
+                .check(obj -> obj.name() != null, "Missing name")
+                .check(obj -> obj.origin() != null, "Missing origin")
+                .check(obj -> obj.aroma() != null, "Missing aroma")
+                .check(obj -> obj.type() != null, "Missing type")
+                .check(obj -> obj.intensity() != 0, "Missing intensity")
                 .get();
         for(Coffee coffee : coffees.values()) {
-            if(c.name.equals(coffee.name)) {
-                System.out.println("not working");
+            if(c.name().equalsIgnoreCase(coffee.name())) {
                 throw new ConflictResponse();
             }
         }
 
-        c = new Coffee(c.name, c.origin, c.intensity, c.aroma, c.type);
+        c = new Coffee(c.name(), c.origin(), c.intensity(), c.aroma(), c.type());
 
-        coffees.put(c.name, c);
+        coffees.put(c.name(), c);
         ctx.status(201);
         ctx.json(c);
     }
@@ -146,7 +95,7 @@ public class Coffee {
             ctx.result("Not found");
             return;
         }
-        coffees.remove(coffee.name);
+        coffees.remove(coffee.name());
         ctx.status(204);
     }
 
@@ -154,7 +103,6 @@ public class Coffee {
      * The function that handle the PUT function : the context should include a path parameter named id, which correspond
      * to the coffee we want to modify. The context should also contain the query parameters for each attribute of the
      * coffee object.
-     *
      * The request shall include at least one of these query parameters, but it can contain all of them
      * @param ctx the context of the request
      */
@@ -182,25 +130,15 @@ public class Coffee {
             ctx.result("Error : Intensity should be between 1 and 10");
             return;
         }
-        coffee.origin = (orgn == null)?coffee.origin : orgn;
-        coffee.aroma = (post_aroma == null)?coffee.aroma : post_aroma;
-        coffee.type = (post_type == null)?coffee.type : post_type;
-        coffee.intensity = (intense == null)?coffee.intensity : Integer.parseInt(intense);
-
-
+        String newOrigin = (orgn == null)?coffee.origin() : orgn;
+        String newAroma = (post_aroma == null)?coffee.aroma() : post_aroma;
+        String newType = (post_type == null)?coffee.type() : post_type;
+        int newIntensity = (intense == null)?coffee.intensity() : Integer.parseInt(intense);
+        coffee = new Coffee(coffee.name(), newOrigin, newIntensity, newAroma, newType);
+        coffees.put(coffee.name(), coffee);
         ctx.json(coffee);
         ctx.status(200);
     }
-
-    /***
-     * For JSON parsing
-     */
-    public String getName() {return name;}
-    public String getOrigin() {return origin;}
-    public String getType() {return type;}
-    public String getAroma() {return aroma;}
-    public int getIntensity() {return intensity;}
-
 
     /**
      * Takes a string and check if it represents an integer value, and if this value is between the min
