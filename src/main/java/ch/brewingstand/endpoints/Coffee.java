@@ -1,4 +1,7 @@
 package ch.brewingstand.endpoints;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
 
 import java.util.ArrayList;
@@ -15,13 +18,17 @@ public class Coffee {
 
     private static final ConcurrentHashMap<String, Coffee> coffees = new ConcurrentHashMap<String, Coffee>();
 
-    public Coffee(String name, String origin, int intensity, String aroma, String type) {
+    @JsonCreator
+    public Coffee(@JsonProperty("name") String name,
+                  @JsonProperty("origin") String origin,
+                  @JsonProperty("intensity") int intensity,
+                  @JsonProperty("aroma") String aroma,
+                  @JsonProperty("type") String type) {
         this.name = name;
         this.intensity = Math.clamp(intensity, 1, 10);
         this.origin = origin;
         this.aroma = aroma;
         this.type = type;
-        coffees.put(name, this);
     }
     /**
      * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffee.
@@ -75,7 +82,7 @@ public class Coffee {
      * @param ctx the context of the request
      */
     public static void postCoffee(Context ctx) {
-        String nm = ctx.queryParam("name");
+        /*String nm = ctx.queryParam("name");
         String orgn = ctx.queryParam("origin");
         String intense = ctx.queryParam("intensity");
         String post_aroma = ctx.queryParam("aroma");
@@ -92,6 +99,7 @@ public class Coffee {
             return;
         }
 
+
         for(Coffee coffee : coffees.values()) {
             if(coffee.getName().equals(nm)){
                 ctx.status(409);
@@ -101,8 +109,25 @@ public class Coffee {
         }
         post_aroma = post_aroma==null?"no specific aroma":post_aroma;
         post_type = post_type==null?"no specific type":post_type;
-
         Coffee c = new Coffee(nm, orgn, Integer.parseInt(intense),  post_aroma, post_type);
+
+        */
+        Coffee c = ctx.bodyValidator(Coffee.class)
+                .check(obj -> obj.name != null, "Missing name")
+                .check(obj -> obj.origin != null, "Missing origin")
+                .check(obj -> obj.aroma != null, "Missing aroma")
+                .check(obj -> obj.type != null, "Missing type")
+                .check(obj -> obj.intensity != 0, "Missing intensity")
+                .get();
+        for(Coffee coffee : coffees.values()) {
+            if(c.name.equals(coffee.name)) {
+                System.out.println("not working");
+                throw new ConflictResponse();
+            }
+        }
+
+        c = new Coffee(c.name, c.origin, c.intensity, c.aroma, c.type);
+
         coffees.put(c.name, c);
         ctx.status(201);
         ctx.json(c);

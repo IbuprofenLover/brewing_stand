@@ -8,23 +8,6 @@ public abstract class RequestManager {
     public static void delegate(Javalin app) {
         coffee_delegate(app);
         review_delegate(app);
-        // todo remove this when coffee is finished
-        createSimpleCoffeeList();
-    }
-
-    // todo remove this when coffee is finished
-    private static void createSimpleCoffeeList(){
-        String[] names = {"Espresso", "Colombian Roast", "French Roast", "Ethiopian Yirgacheffe",
-                        "Sumatra Mandheling", "Kenyan AA", "House Blend",
-                        "Guatemalan Huehuetenango", "Brazilian Santos", "Italian Dark Roast"};
-
-        String[] origins = {"Italy", "Colombia", "France", "Ethiopia", "Indonesia",
-                        "Kenya", "USA", "Guatemala", "Brazil", "Italy"};
-
-        String[] aroma = {"coco and dark chocolate", "hints of wood", "fruity", "bitter"};
-        String[] types = {"blend", "preparation", "aromatic coffee"};
-
-        for (int i = 0; i < names.length; i++) {Coffee f = new Coffee(names[i], origins[i], i%10, aroma[i%4], types[i%3]);}
     }
 
     private static void coffee_delegate(Javalin app) {
