@@ -158,4 +158,23 @@ public class CoffeeController {
         }
     }
 
+    /**
+     * Checks whether a coffee exists in the current in-memory storage, using a case-insensitive match on the coffee name.
+     *
+     * @param coffeeName the coffee name to check
+     * @return true if a coffee with the given name exists, false otherwise
+     */
+    public static boolean coffeeExistsByName(String coffeeName) {
+        if (coffeeName == null) return false;
+
+        // coffees is keyed by name, but we still ensure case-insensitive behavior.
+        for (Coffee c : coffees.values()) {
+            if (c.name() != null && c.name().equalsIgnoreCase(coffeeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
