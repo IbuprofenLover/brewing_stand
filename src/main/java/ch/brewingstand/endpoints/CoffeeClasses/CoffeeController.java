@@ -1,13 +1,17 @@
 package ch.brewingstand.endpoints.CoffeeClasses;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
+import io.javalin.http.NotModifiedResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.time.LocalDateTime;
 
 public class CoffeeController {
     private static final ConcurrentHashMap<String, Coffee> coffees = new ConcurrentHashMap<String, Coffee>();
+    private static final ConcurrentHashMap<String, LocalDateTime> cached_time = new ConcurrentHashMap<String, LocalDateTime>();
+
     public CoffeeController() {}
     /**
      * The function that handle the GET requests, for coffees, using path parameters. it can respond one coffee.
@@ -22,6 +26,30 @@ public class CoffeeController {
             ctx.result("coffee with name "+idToRetrieve +" do not exists.");
             return;
         }
+
+        // Here we get the last time the value has been changed from the user
+        LocalDateTime lastKnownModification =
+                ctx.headerAsClass("If-Modified-Since", LocalDateTime.class).getOrDefault(null);
+
+        LocalDateTime cached =  cached_time.get(idToRetrieve);
+
+
+        // check if the user sent the last time he requested the value, and if it's the same as before
+        if (lastKnownModification != null && cached != null && cached_time.get(coffee.name()).equals(lastKnownModification)) {
+            throw new NotModifiedResponse();
+        }
+
+        // get the time of last modification
+        LocalDateTime now;
+        if(cached_time.containsKey(coffee.name())) {
+            now =  cached_time.get(coffee.name());
+        } else {
+            // if it was not present, set the date to know (happens at the start)
+            now = LocalDateTime.now();
+            cached_time.put(coffee.name(), now);
+        }
+
+        ctx.header("Last-Modified", String.valueOf(now));
         ctx.json(coffee);
     }
 
@@ -96,6 +124,7 @@ public class CoffeeController {
             return;
         }
         coffees.remove(coffee.name());
+        cached_time.remove(coffee.name());
         ctx.status(204);
     }
 
@@ -114,7 +143,6 @@ public class CoffeeController {
             ctx.result("Error : coffee with name "+ coffeeToUpdate +" do not exists.");
             return;
         }
-        String nm = ctx.queryParam("name");
         String orgn = ctx.queryParam("origin");
         String intense = ctx.queryParam("intensity");
         String post_aroma = ctx.queryParam("aroma");
@@ -136,6 +164,7 @@ public class CoffeeController {
         int newIntensity = (intense == null)?coffee.intensity() : Integer.parseInt(intense);
         coffee = new Coffee(coffee.name(), newOrigin, newIntensity, newAroma, newType);
         coffees.put(coffee.name(), coffee);
+        cached_time.put(coffee.name(), LocalDateTime.now());
         ctx.json(coffee);
         ctx.status(200);
     }
