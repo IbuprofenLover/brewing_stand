@@ -107,11 +107,11 @@ ssh ubuntu@<VM_IP_or_domain>
 
 Replace `<VM_IP_or_domain>` with the public IP or domain name of your VM. Make sure your SSH key is configured or use the password provided for the `ubuntu` user.
 
-Once connected, you can pull the Docker image from the GitHub Registry, start the API using Docker Compose in the `api` folder, and verify that Traefik is running to ensure HTTPS and domain routing are active.
+Once connected, you can pull the latest API image from the GitHub Container Registry and start it with Docker Compose.
 
 ```bash
 docker login ghcr.io
-docker pull ghcr.io/mircoprofico/brewingstand-api:latest
+docker compose pull           # retrieves the latest image from GitHub Container Registry
 ```
 
 
