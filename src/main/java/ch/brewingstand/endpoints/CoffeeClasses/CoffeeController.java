@@ -114,7 +114,6 @@ public class CoffeeController {
             ctx.result("Error : coffee with name "+ coffeeToUpdate +" do not exists.");
             return;
         }
-        String nm = ctx.queryParam("name");
         String orgn = ctx.queryParam("origin");
         String intense = ctx.queryParam("intensity");
         String post_aroma = ctx.queryParam("aroma");
