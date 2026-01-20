@@ -1,6 +1,7 @@
 # Brewing Stand
 ## lite weight CRUD API for coffee ranking
-##### Author : Tiago Ferreira @tfHEIG, Profico Mirco ,@mircoprofico, Gellet Pierre @IbuprofenLover
+##### Author : 
+Tiago Ferreira @tfHEIG, Profico Mirco ,@mircoprofico, Gellet Pierre @IbuprofenLover
 ### Quick installation
 the first step is to clone the repository, either via https or ssh :
 ###### HTTPS clone
