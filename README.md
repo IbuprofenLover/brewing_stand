@@ -91,3 +91,92 @@ built from the global dataVersion and a scope-specific hash (e.g., review ID or 
 If-None-Match header with the cached ETag, the server compares it to the current ETag; if they match, it returns 304 
 Not Modified, avoiding sending the full data. Any mutation (POST, PUT, DELETE) increments dataVersion, automatically 
 invalidating all cached ETags.
+
+
+## Deployment on the Virtual Machine
+
+The application can be deployed on a VM to be accessible via a domain name with HTTPS.
+
+### Connecting to the Virtual Machine
+
+To manage or deploy the API, you need to connect to the VM using SSH:
+
+```bash
+ssh ubuntu@<VM_IP_or_domain>
+```
+
+Replace `<VM_IP_or_domain>` with the public IP or domain name of your VM. Make sure your SSH key is configured or use the password provided for the `ubuntu` user.
+
+Once connected, you can pull the Docker image from the GitHub Registry, start the API using Docker Compose in the `api` folder, and verify that Traefik is running to ensure HTTPS and domain routing are active.
+
+```bash
+docker login ghcr.io
+docker pull ghcr.io/mircoprofico/brewingstand-api:latest
+```
+
+
+### Docker Compose with Traefik
+
+A `docker-compose.yaml` file is used to:
+
+* Deploy the API in a Docker container.
+* Connect the API to Traefik, which acts as a **reverse proxy**.
+* Allow Traefik to automatically manage **HTTP/HTTPS routing** and TLS certificates via **Let's Encrypt**.
+* Ensure both Traefik and the API are **running on the VM and accessible via the domain**.
+
+In this project, the Compose file is located in the `api` folder. Start the services with:
+
+```bash
+docker compose up -d
+```
+
+Once running:
+
+* The API is accessible at `https://heig.freeddns.org`.
+* Traefik handles HTTPS certificates automatically.
+* The Traefik dashboard is publicly accessible by default (it can be secured if needed).
+
+---
+
+**Note:** The API is accessible via `https://heig.freeddns.org` **only if Traefik is running** on the VM.
+If Traefik has been stopped, restart it using:
+
+```bash
+cd ~/project/traefik
+docker compose up -d
+```
+
+Traefik handles HTTPS, domain routing, and the API reverse proxy, so the API will not be reachable until Traefik is active.
+
+
+### Testing the API with `curl`
+
+Example request to create a coffee entry:
+
+```bash
+curl -i -X POST https://heig.freeddns.org/coffee \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Espresso",
+    "origin": "Italy",
+    "intensity": 8,
+    "aroma": "Chocolate",
+    "type": "Hot"
+  }'
+```
+
+Expected response:
+
+```json
+{"name":"Espresso","origin":"Italy","intensity":8,"aroma":"Chocolate","type":"Hot"}
+```
+
+You can use similar requests for reviews and other CRUD operations.
+
+---
+
+### Automatic HTTPS
+
+Traefik automatically generates TLS certificates using **Let's Encrypt**, ensuring secure access to the API.
+
+
