@@ -63,13 +63,15 @@ Get many coffees.
 The request can contain the following query parameters:
 
 - `intensity` - Filter coffees by intensity.
+- `aromas` - The aromas of the coffee.
+- `origin` - The origin of the coffee.
+- `type` - The type of the coffee.
 
 #### Response
 
 The response body contains a JSON array with the following properties:
 
-- `id` - The unique identifier of the coffee.
-- `name` - The name of the coffee.
+- `name` - The name of the coffee (used as unique identifier).
 - `intensity` - The intensity of the coffee.
 - `aromas` - The aromas of the coffee.
 - `origin` - The origin of the coffee.
@@ -83,19 +85,18 @@ The response body contains a JSON array with the following properties:
 
 ### Get one coffee
 
-- `GET /coffees/{id}`
+- `GET /coffees/{name}`
 
-Get one coffee by its ID.
+Get one coffee by its name.
 
 #### Request
 
-The request path must contain the ID of the coffee.
+The request path must contain the name of the coffee.
 
 #### Response
 
 The response body contains a JSON object with the following properties:
 
-- `id` - The unique identifier of the coffee.
 - `name` - The name of the coffee.
 - `intensity` - The intensity of the coffee.
 - `aromas` - The aromas of the coffee.
@@ -111,9 +112,9 @@ The response body contains a JSON object with the following properties:
 
 ### Update a coffee
 
-- `PUT /coffees/{id}`
+- `PUT /coffees/{name}`
 
-Update a coffee by its ID.
+Update a coffee by its name.
 
 #### Request
 
@@ -131,7 +132,6 @@ The request body must contain a JSON object with the following properties:
 
 The response body contains a JSON object with the following properties:
 
-- `id` - The unique identifier of the coffee.
 - `name` - The name of the coffee.
 - `intensity` - The intensity of the coffee.
 - `aromas` - The aromas of the coffee.
@@ -148,7 +148,7 @@ The response body contains a JSON object with the following properties:
 
 ### Delete a coffee
 
-- `DELETE /coffees/{id}`
+- `DELETE /coffees/{name}`
 
 Delete a coffee by its ID.
 
@@ -193,7 +193,7 @@ The response body contains a JSON object with the following properties:
 #### Status codes
 
 - `201` (Created) - The review has been successfully created.
-- `400` (Bad Request) - The request body is invalid.
+- `400` (Bad Request) - The request body is invalid. / The coffee does not exists
 - `409` (Conflict) - The review already exists.
 
 ---
