@@ -66,3 +66,28 @@ curl -i -X POST http://localhost:8080/reviews -H "Content-Type: application/json
     "comment": "Strong and delicious!"
   }'
   ```
+note : As mentioned inside the API declaration, a review can only be created if it reviews an existing coffee.
+The response to this shall be :
+```blame
+HTTP/1.1 201 Created
+Date: Tue, 20 Jan 2026 20:09:34 GMT
+Content-Type: application/json
+Content-Length: 79
+
+{"id":"1","coffeeName":"Espresso","rating":5,"comment":"Strong and delicious!"}
+```
+### Caching strategy
+There are two caching strategies, depending on which endpoint you do a request from :
+1. For the coffee endpoint, the caching works on a validation model, where the precise time when a value is modified last
+is stored. When a get request is made on a specific coffee, if the user adds to its request the header something like
+```shell
+  "If-Modified-Since: 2026-01-20T14:32:10.123"
+```
+Then the server will first check if the data requested has changed since the given time. If not, it will return an empty
+body response with response code 304 (Not modified).
+
+2. For the reviews endpoint, the code implements ETag-based caching for GET requests. Each response includes an ETag 
+built from the global dataVersion and a scope-specific hash (e.g., review ID or query filter). When a client sends an 
+If-None-Match header with the cached ETag, the server compares it to the current ETag; if they match, it returns 304 
+Not Modified, avoiding sending the full data. Any mutation (POST, PUT, DELETE) increments dataVersion, automatically 
+invalidating all cached ETags.
