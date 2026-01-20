@@ -63,6 +63,9 @@ Get many coffees.
 The request can contain the following query parameters:
 
 - `intensity` - Filter coffees by intensity.
+- `aromas` - The aromas of the coffee.
+- `origin` - The origin of the coffee.
+- `type` - The type of the coffee.
 
 #### Response
 
