@@ -16,6 +16,20 @@ git clone https://github.com/IbuprofenLover/brewing_stand.git
 git clone git@github.com:IbuprofenLover/brewing_stand.git
 ```
 
+### Build the application
+To build the application, simply run :
+```shell
+  mvn clean package
+```
+This generates the runnable JAR:
+target/brewing_stand-1.0-SNAPSHOT.jar
+
+### Run the application
+If you've followed all the previous step, you can then start the application using :
+```shell
+java -jar target/brewing_stand-1.0-SNAPSHOT.jar
+```
+
 ### Usage
 Once the application is running, you'll be able to access it using the HTTP/HTTPS protocol. The application is composed
 of two endpoints, coffee and reviews. By default, the application doesn't contain any value, meaning you'll have to
@@ -43,5 +57,12 @@ Content-Length: 83
 
 {"name":"Espresso","origin":"Italy","intensity":8,"aroma":"Chocolate","type":"Hot"}p
 ```
-You are now able to create a review using
+You are now able to create a review using a similar request, but with a slightly different json and endpoint :
 
+```shell
+curl -i -X POST http://localhost:8080/reviews -H "Content-Type: application/json"   -d '{
+    "coffeeName": "Espresso",
+    "rating": 5,
+    "comment": "Strong and delicious!"
+  }'
+  ```
