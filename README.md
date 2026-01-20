@@ -154,7 +154,7 @@ Traefik handles HTTPS, domain routing, and the API reverse proxy, so the API wil
 Example request to create a coffee entry:
 
 ```bash
-curl -i -X POST https://heig.freeddns.org/coffee \
+curl -i -X POST https://heig.freeddns.org/coffees \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Espresso",
