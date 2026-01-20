@@ -22,12 +22,12 @@ public abstract class RequestManager {
      * @param app Javalin application
      */
     private static void coffee_delegate(Javalin app) {
-        app.get("/coffee", CoffeeController::getManyCoffees);
-        app.get("/coffee/{id}", CoffeeController::getCoffeeById);
+        app.get("/coffees", CoffeeController::getManyCoffees);
+        app.get("/coffees/{id}", CoffeeController::getCoffeeById);
 
-        app.post("/coffee", CoffeeController::postCoffee);
-        app.put("/coffee/{id}", CoffeeController::putCoffee);
-        app.delete("/coffee/{id}", CoffeeController::deleteCoffee);
+        app.post("/coffees", CoffeeController::postCoffee);
+        app.put("/coffees/{id}", CoffeeController::putCoffee);
+        app.delete("/coffees/{id}", CoffeeController::deleteCoffee);
     }
 
     /**
