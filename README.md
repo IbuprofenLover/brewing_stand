@@ -1,5 +1,5 @@
 # Brewing Stand
-## lite weight CRUD API for coffee ranking
+## CRUD API for coffee ranking
 ##### Author : 
 - Tiago Ferreira [@tfHEIG](https://github.com/tfHEIG)
 - Profico Mirco ,[@mircoprofico](https://github.com/mircoprofico) 
